@@ -1,0 +1,232 @@
+'use client';
+
+import React, { useState, useEffect } from 'react';
+import { 
+  Typography, 
+  Button, 
+  Table, 
+  Tag, 
+  Space, 
+  Modal, 
+  Form, 
+  Input, 
+  Tabs,
+  message,
+  Spin
+} from 'antd';
+import { 
+  PlusOutlined, 
+  DeleteOutlined,
+} from '@ant-design/icons';
+import { useAuth } from '@/contexts/AuthContext';
+import supabase from '@/utils/supabase';
+
+const { Title, Text } = Typography;
+const { TabPane } = Tabs;
+
+// Define types for workspace
+interface Workspace {
+  id: string;
+  name: string;
+  created_at: string;
+  is_default: boolean;
+  is_superadmin_workspace: boolean;
+}
+
+export default function WorkspacesPage() {
+  const { user, userRole } = useAuth();
+  const [workspaces, setWorkspaces] = useState<Workspace[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [createModalVisible, setCreateModalVisible] = useState<boolean>(false);
+  const [createForm] = Form.useForm();
+
+  // Fetch workspaces
+  const fetchData = async () => {
+    setLoading(true);
+    try {
+      // Fetch workspaces
+      const { data: workspacesData, error: workspacesError } = await supabase
+        .from('workspaces')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (workspacesError) throw workspacesError;
+      setWorkspaces(workspacesData || []);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+      message.error('Failed to load data');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (user && userRole === 'superadmin') {
+      fetchData();
+    }
+  }, [user, userRole]);
+
+  // Create a new workspace
+  const handleCreateWorkspace = async (values: { name: string }) => {
+    try {
+      const { data, error } = await supabase
+        .from('workspaces')
+        .insert([
+          { 
+            name: values.name,
+            created_by: user?.id,
+            is_default: false,
+            is_superadmin_workspace: false
+          }
+        ])
+        .select();
+
+      if (error) throw error;
+      
+      message.success('Workspace created successfully');
+      createForm.resetFields();
+      setCreateModalVisible(false);
+      fetchData();
+    } catch (error) {
+      console.error('Error creating workspace:', error);
+      message.error('Failed to create workspace');
+    }
+  };
+
+  // Delete a workspace
+  const handleDeleteWorkspace = async (workspaceId: string) => {
+    try {
+      // Check if workspace is default or superadmin workspace
+      const workspace = workspaces.find(w => w.id === workspaceId);
+      if (workspace?.is_default || workspace?.is_superadmin_workspace) {
+        message.error('Cannot delete default or SuperAdmin workspaces');
+        return;
+      }
+
+      // Delete the workspace
+      const { error } = await supabase
+        .from('workspaces')
+        .delete()
+        .eq('id', workspaceId);
+
+      if (error) throw error;
+      
+      message.success('Workspace deleted successfully');
+      fetchData();
+    } catch (error) {
+      console.error('Error deleting workspace:', error);
+      message.error('Failed to delete workspace');
+    }
+  };
+
+  // Workspace table columns
+  const workspaceColumns = [
+    {
+      title: 'Name',
+      dataIndex: 'name',
+      key: 'name',
+    },
+    {
+      title: 'Created At',
+      dataIndex: 'created_at',
+      key: 'created_at',
+      render: (text: string) => new Date(text).toLocaleString(),
+    },
+    {
+      title: 'Type',
+      key: 'type',
+      render: (record: Workspace) => (
+        <Space>
+          {record.is_default && <Tag color="blue">Default</Tag>}
+          {record.is_superadmin_workspace && <Tag color="purple">SuperAdmin</Tag>}
+          {!record.is_default && !record.is_superadmin_workspace && <Tag color="green">Regular</Tag>}
+        </Space>
+      ),
+    },
+    {
+      title: 'Actions',
+      key: 'actions',
+      render: (record: Workspace) => (
+        <Space>
+          {!record.is_default && !record.is_superadmin_workspace && (
+            <Button 
+              icon={<DeleteOutlined />} 
+              danger
+              onClick={() => handleDeleteWorkspace(record.id)}
+            >
+              Delete
+            </Button>
+          )}
+        </Space>
+      ),
+    },
+  ];
+
+  // If not superadmin, show access denied
+  if (userRole !== 'superadmin') {
+    return (
+      <div className="text-center py-10">
+        <Title level={3}>Access Denied</Title>
+        <Text>Only SuperAdmins can access this page.</Text>
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <div className="flex justify-between items-center mb-6">
+        <Title level={2}>Workspace Management</Title>
+        <Button 
+          type="primary" 
+          icon={<PlusOutlined />}
+          onClick={() => setCreateModalVisible(true)}
+        >
+          Create Workspace
+        </Button>
+      </div>
+
+      <Tabs defaultActiveKey="workspaces">
+        <TabPane tab="Workspaces" key="workspaces">
+          {loading ? (
+            <div className="text-center py-10">
+              <Spin size="large" />
+            </div>
+          ) : (
+            <Table 
+              columns={workspaceColumns} 
+              dataSource={workspaces.map(w => ({ ...w, key: w.id }))} 
+              rowKey="id"
+            />
+          )}
+        </TabPane>
+      </Tabs>
+
+      {/* Create Workspace Modal */}
+      <Modal
+        title="Create New Workspace"
+        open={createModalVisible}
+        onCancel={() => setCreateModalVisible(false)}
+        footer={null}
+      >
+        <Form
+          form={createForm}
+          layout="vertical"
+          onFinish={handleCreateWorkspace}
+        >
+          <Form.Item
+            name="name"
+            label="Workspace Name"
+            rules={[{ required: true, message: 'Please enter workspace name' }]}
+          >
+            <Input placeholder="Enter workspace name" />
+          </Form.Item>
+          <Form.Item>
+            <Button type="primary" htmlType="submit">
+              Create Workspace
+            </Button>
+          </Form.Item>
+        </Form>
+      </Modal>
+    </div>
+  );
+}

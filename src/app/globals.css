@@ -1,0 +1,265 @@
+/* 
+ * Tailwind CSS directives
+ * These are processed by the Tailwind CSS framework
+ * and are not standard CSS at-rules
+ */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+/* Minimal table styling */
+.ant-table-minimal .ant-table-thead>tr>th {
+  border-bottom: 2px solid #d9d9d9;
+  border-right: none;
+  background-color: #fafafa;
+  font-weight: 600;
+  color: #262626;
+}
+
+.ant-table-minimal .ant-table-tbody>tr>td {
+  border-bottom: 1px solid #f0f0f0;
+  border-right: none;
+}
+
+.ant-table-minimal .ant-table-tbody>tr:last-child>td {
+  border-bottom: none;
+}
+
+.ant-table-minimal .ant-table-cell-fix-right {
+  background: white;
+  box-shadow: -6px 0 6px -4px rgba(0, 0, 0, 0.05);
+}
+
+.ant-table-minimal .ant-table-tbody>tr:hover>td {
+  background-color: #f5f5f5;
+}
+
+.ant-table-minimal .ant-table-tbody>tr:hover>td.ant-table-cell-fix-right {
+  background-color: #f5f5f5;
+}
+
+/* Custom styling for folder tree */
+.custom-tree .ant-tree-node-content-wrapper {
+  color: #4b5563;
+  /* text-gray-600 equivalent */
+  display: inline-flex;
+  align-items: center;
+  vertical-align: middle;
+  transition: all 0.2s ease;
+  width: calc(100% - 24px);
+  /* Make room for the dropdown button */
+  padding: 6px 8px !important;
+  border-radius: 4px;
+}
+
+.custom-tree .ant-tree-node-content-wrapper:hover {
+  background-color: #f5f5f5;
+}
+
+/* Ensure dropdown button is always visible */
+.custom-tree .ant-btn {
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+/* Reset all tree node styling to ensure consistency */
+.custom-tree .ant-tree-treenode,
+.custom-tree .ant-tree-treenode *,
+.custom-tree .ant-tree-node-content-wrapper,
+.custom-tree .ant-tree-node-content-wrapper * {
+  background-color: transparent;
+}
+
+/* Style for the entire tree node when selected */
+.custom-tree .ant-tree-treenode-selected {
+  background-color: transparent !important;
+}
+
+/* Style for the content wrapper (the clickable area) */
+.custom-tree .ant-tree-node-content-wrapper {
+  background-color: transparent;
+}
+
+/* Style for the selected content wrapper - using a much lighter blue */
+.custom-tree .ant-tree-node-content-wrapper.ant-tree-node-selected {
+  background-color: rgba(24, 144, 255, 0.1) !important;
+  /* Very light blue */
+  color: #1890ff !important;
+}
+
+/* Style for the title inside the selected content wrapper */
+.custom-tree .ant-tree-node-content-wrapper.ant-tree-node-selected .ant-tree-title {
+  color: #1890ff !important;
+}
+
+/* Ensure text is visible when selected */
+.custom-tree .ant-tree-node-content-wrapper.ant-tree-node-selected .flex.items-center {
+  color: #1890ff !important;
+  font-weight: 500;
+}
+
+/* Style for the switcher (expand/collapse icon) */
+.custom-tree .ant-tree-switcher {
+  background-color: transparent !important;
+}
+
+/* Style for the switcher when parent is selected */
+.custom-tree .ant-tree-treenode-selected .ant-tree-switcher {
+  color: #1890ff !important;
+  background-color: transparent !important;
+}
+
+/* Style for the indent unit (the vertical lines) */
+.custom-tree .ant-tree-indent-unit {
+  background-color: transparent !important;
+}
+
+/* Style for the indent unit when parent is selected */
+.custom-tree .ant-tree-treenode-selected .ant-tree-indent-unit {
+  background-color: transparent !important;
+}
+
+/* Style for the indent (the container of vertical lines) */
+.custom-tree .ant-tree-indent {
+  background-color: transparent !important;
+}
+
+/* Style for text elements */
+.custom-tree .flex.items-center {
+  color: inherit;
+}
+
+/* Style for text elements when selected */
+.custom-tree .ant-tree-node-content-wrapper.ant-tree-node-selected .flex.items-center {
+  color: #1890ff !important;
+  font-weight: 500;
+}
+
+/* Ensure folder icon is visible */
+.custom-tree .ant-tree-node-content-wrapper.ant-tree-node-selected .anticon {
+  color: #1890ff !important;
+}
+
+/* Override any deep blue background that might be applied by Ant Design */
+.ant-tree-list,
+.ant-tree-list-holder,
+.ant-tree-list-holder-inner,
+.ant-tree-treenode {
+  background-color: transparent !important;
+}
+
+/* Root class for the folder tree */
+.folder-tree-root .ant-tree-node-selected,
+.folder-tree-root .ant-tree-node-selected:hover {
+  background-color: rgba(24, 144, 255, 0.1) !important;
+}
+
+/* Override the deep blue background for the selected folder */
+.folder-tree-root .ant-tree-treenode-selected {
+  background-color: transparent !important;
+}
+
+.folder-tree-root .ant-tree-node-content-wrapper.ant-tree-node-selected {
+  background-color: rgba(24, 144, 255, 0.1) !important;
+}
+
+/* Ensure text is visible in the selected folder */
+.folder-tree-root .ant-tree-node-content-wrapper.ant-tree-node-selected .flex.items-center {
+  color: #1890ff !important;
+}
+
+/* Fix for folder icon */
+.folder-tree-root .ant-tree-node-content-wrapper.ant-tree-node-selected .anticon {
+  color: #1890ff !important;
+}
+
+/* No longer needed - combined with the rule above */
+
+/* Custom folder tree styling */
+.custom-folder-tree {
+  padding: 8px;
+  overflow-y: auto;
+  max-height: calc(100vh - 300px);
+}
+
+.custom-folder-tree .ml-4 {
+  margin-left: 1rem;
+}
+
+.custom-folder-tree .my-2 {
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.custom-folder-tree .cursor-pointer {
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.custom-folder-tree .cursor-pointer:hover {
+  background-color: #f5f5f5;
+}
+
+.custom-tree .ant-tree-title {
+  color: #4b5563;
+  /* text-gray-600 equivalent */
+  display: inline-flex;
+  align-items: center;
+  vertical-align: middle;
+  width: 100%;
+}
+
+.custom-tree .ant-tree-switcher {
+  color: #6b7280;
+  /* text-gray-500 equivalent */
+  display: inline-flex;
+  align-items: center;
+  vertical-align: middle;
+}
+
+.custom-tree .ant-tree-icon__customize {
+  margin-right: 4px;
+  display: inline-flex;
+  align-items: center;
+  vertical-align: middle;
+}
+
+.custom-tree .anticon {
+  display: inline-flex;
+  align-items: center;
+  vertical-align: middle;
+  line-height: 1;
+}
+
+/* Make the folder tree match the menu styling */
+.custom-tree .ant-tree-treenode {
+  padding: 0 !important;
+  margin: 4px 0;
+}
+
+/* No longer needed - combined with the rule above */
